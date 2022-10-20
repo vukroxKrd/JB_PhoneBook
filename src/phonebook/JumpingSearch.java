@@ -1,20 +1,19 @@
 package phonebook;
 
 public class JumpingSearch {
+
     public static void mainMethod() {
 
         Integer[] filler = new Integer[102];
         for (int i = 0, j = 1; i < 102; i++, j++) {
             filler[i] = j;
         }
-
 //        Integer[] array = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233};
         Integer[] elementsToSearch = {1, 11, 10, 20, 2, 12, 32};
         for (Integer next : elementsToSearch) {
             int arrIndex = jumpSearch(filler, next);
             System.out.println(arrIndex);
         }
-
     }
 
 
