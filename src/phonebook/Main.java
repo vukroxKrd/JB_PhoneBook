@@ -15,6 +15,9 @@ public class Main {
 
     private static Map<String, List<Long>> timestamps = new HashMap<>();
     private static final String BUBBLE_SORT = "bubble sort";
+    private static final String HASH_TABLE = "hash table";
+    private static final String HASH_TABLE_CREATING = "Creating";
+    private static final String HASH_TABLE_SEARCHING = "Searching";
     private static final String QUICK_SORT = "quick sort";
     private static final String LINEAR_SEARCH = "linear search";
     private static final String BINARY_SEARCH = " binary search";
@@ -160,10 +163,27 @@ public class Main {
                 long secondsBinarySearch = (binarySearchEnding - binarySearchBeginning) / 1000;
                 long msBinarySearch = (binarySearchEnding - binarySearchBeginning) % 1000;
                 timestamps.put(BINARY_SEARCH, List.of(minutesBinarySearch, secondsBinarySearch, msBinarySearch));
-
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }
+            //stage 4
+            long hashTableBegin = System.currentTimeMillis();
+            Map<String, Addressat> addressatsByHashTables = InstantSearch.dictionaryToNamePhoneMap(entries);
+            long hashTableEnd = System.currentTimeMillis();
+
+            long minutesHashTable = (hashTableEnd - hashTableBegin) / 60000;
+            long secondsHashTable = (hashTableEnd - hashTableBegin) / 1000;
+            long msHashTable = (hashTableEnd - hashTableBegin) % 1000;
+            timestamps.put(HASH_TABLE_CREATING, List.of(minutesHashTable, secondsHashTable, msHashTable));
+
+            long hashSearchBegin = System.currentTimeMillis();
+            List<Addressat> foundByInstantSearch = InstantSearch.instantHashSearch(search, addressatsByHashTables);
+            long hashSearchEnd = System.currentTimeMillis();
+
+            long minutesHashSearchEnd = (hashSearchEnd - hashSearchBegin) / 60000;
+            long secondsHashSearchEnd = (hashSearchEnd - hashSearchBegin) / 1000;
+            long msHashSearchEnd = (hashSearchEnd - hashSearchBegin) % 1000;
+            timestamps.put(HASH_TABLE_SEARCHING, List.of(minutesHashSearchEnd, secondsHashSearchEnd, msHashSearchEnd));
 
             if (bubbleSortComplete) {
                 System.out.printf("Found %s/%s entries. Time taken: %d min. %d sec. %d ms. \n", search.size(),
@@ -197,6 +217,20 @@ public class Main {
                     timestamps.get(BINARY_SEARCH).get(1),
                     timestamps.get(BINARY_SEARCH).get(2));
 
+            System.out.printf("\nStart searching (%s)...\n",HASH_TABLE);
+            System.out.printf("Found %s/%s entries. Time taken: %d min. %d sec. %d ms. \n", search.size(),
+                    foundByInstantSearch.size(),
+                    timestamps.get(HASH_TABLE_CREATING).get(0) + timestamps.get(HASH_TABLE_SEARCHING).get(0),
+                    timestamps.get(HASH_TABLE_CREATING).get(1) + timestamps.get(HASH_TABLE_SEARCHING).get(1),
+                    timestamps.get(HASH_TABLE_CREATING).get(2) + timestamps.get(HASH_TABLE_SEARCHING).get(2));
+            System.out.printf("Creating time: %d min. %d sec. %d ms.\n",
+                    timestamps.get(HASH_TABLE_CREATING).get(0),
+                    timestamps.get(HASH_TABLE_CREATING).get(1),
+                    timestamps.get(HASH_TABLE_CREATING).get(2));
+            System.out.printf("Searching time: %d min. %d sec. %d ms.\n",
+                    timestamps.get(HASH_TABLE_SEARCHING).get(0),
+                    timestamps.get(HASH_TABLE_SEARCHING).get(1),
+                    timestamps.get(HASH_TABLE_SEARCHING).get(2));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -453,7 +487,7 @@ public class Main {
     public static List<String> readContentFromFileIntoList(String stringPathRepr) throws IOException {
         List<String> returnVal = new ArrayList<>();
         Path path = Paths.get(stringPathRepr);
-        System.out.println(path.toAbsolutePath());
+//        System.out.println(path.toAbsolutePath());
 
         try (Stream<String> allLines = Files.lines(path)) {
             returnVal = allLines
